@@ -1,0 +1,54 @@
+import UIKit
+
+class ViewController: UIViewController {
+
+    @IBOutlet weak var navigationBar: UINavigationBar!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Set the title of the navigation bar.
+        navigationBar.topItem?.title = "Golf Swing Fixer"
+
+        // Create an array of images for the navigation bar items.
+        let images = [
+            UIImage(named: "slice"),
+            UIImage(named: "hook"),
+            UIImage(named: "thinfat"),
+            UIImage(named: "distance"),
+            UIImage(named: "chipping"),
+            UIImage(named: "putting"),
+            UIImage(named: "bunkers")
+        ]
+
+        // Create an array of labels for the navigation bar items.
+        let labels = [
+            "Slice",
+            "Hook",
+            "Thin/Fat Strike",
+            "Distance",
+            "Chipping",
+            "Putting",
+            "Bunkers"
+        ]
+
+        // Create an array of buttons for the navigation bar items.
+        let buttons = images.enumerated().map { (index, image) -> UIButton in
+            let button = UIButton(type: .custom)
+            button.setImage(image, for: .normal)
+            button.setTitle(labels[index], for: .normal)
+            button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+            return button
+        }
+
+        // Add the buttons to the navigation bar.
+        for (index, button) in buttons.enumerated() {
+            navigationBar.setItems([button], animated: false)
+        }
+    }
+
+    @objc func buttonTapped(_ button: UIButton) {
+        // Do something when a button is tapped.
+        print("Button \(button.titleLabel!.text!) was tapped.")
+    }
+}
