@@ -184,7 +184,7 @@ ${questionCount < maxQuestions - 1
     }
   } catch (err) {
     document.getElementById('question-area').innerHTML = `
-      <div class="error-msg">Something went wrong. Please try again.</div>
+      <div class="error-msg">Error: ${err.message}</div>
       <button class="option-btn" onclick="askQuestion()">Try again</button>`;
   }
 }
