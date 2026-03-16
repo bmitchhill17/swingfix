@@ -137,23 +137,34 @@ async function askQuestion() {
   document.getElementById('question-area').innerHTML = '<div class="ai-thinking"><div class="spinner"></div> Analyzing your swing...</div>';
   updateProgress();
 
-  const systemPrompt = `You are an expert PGA-level golf instructor diagnosing swing faults.
+const systemPrompt = `You are an expert PGA-level golf instructor diagnosing swing faults.
 The golfer has reported: "${selectedFault.name} — ${selectedFault.desc}". The golfer is ${isLeftHanded ? 'LEFT-handed — all directions are mirrored from a right-handed golfer' : 'RIGHT-handed'}.
 
 Key ball flight laws for a RIGHT-handed golfer:
 - Ball starting RIGHT of target = clubface is OPEN at impact
-- Ball starting LEFT of target = clubface is CLOSED at impact  
+- Ball starting LEFT of target = clubface is CLOSED at impact
 - Ball curving RIGHT (slice/fade) = swing path is out-to-in relative to clubface
 - Ball curving LEFT (hook/draw) = swing path is in-to-out relative to clubface
-- Ball going STRAIGHT RIGHT = clubface open AND path matching, likely a push — caused by in-to-out path with open face, or swinging too far right
-- Ball going STRAIGHT LEFT = clubface closed AND path matching, likely a pull — caused by out-to-in path with closed face
-Always apply these laws correctly when diagnosing. Never contradict basic ball flight laws.
+- Ball going STRAIGHT RIGHT = likely a push — in-to-out path with open face
+- Ball going STRAIGHT LEFT = likely a pull — out-to-in path with closed face
+Always apply these laws correctly. Never contradict basic ball flight laws.
+
 Their answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}`).join('; ') : 'none yet'}.
 Question number: ${questionCount + 1} of ${maxQuestions}.
 
 ${questionCount < maxQuestions - 1
   ? `Ask ONE diagnostic follow-up question to narrow down the root cause.
-     IMPORTANT: Questions must be based on what the golfer can OBSERVE about their ball flight or body feel — never ask about technical mechanics like clubface angle, swing path degrees, or shaft position. Ask things like where the ball starts, how high it flies, when the curve happens, or what they feel during the swing.
+     Each fault should lead to DIFFERENT questions — do not default to asking about ball direction for every fault.
+     Use this as a guide for what to ask first based on the fault:
+     - Slice or fade: ask WHEN the ball starts to curve (early, mid-flight, or late)
+     - Hook or draw: ask HOW SEVERE the curve is and whether it happens immediately or mid-flight
+     - Fat/heavy shot: ask what the ground condition feels like at impact (a big thud, a slight brush, or a divot before the ball)
+     - Thin or topped: ask WHERE on the clubface they think they are making contact (top, middle, or they are not sure)
+     - Push right: ask what their swing FEELS like (swinging out to the right, swinging normally, or not sure)
+     - Pull left: ask whether the ball flies high and left or low and left
+     - Loss of distance: ask what the ball flight looks like (too high and ballooning, too low, or normal height but short)
+     - Shank: ask how close to the ball they feel they are standing (very close, normal, or reaching for it)
+     IMPORTANT: Questions must be based on what the golfer can OBSERVE about their ball flight or body feel — never ask about technical mechanics like clubface angle, swing path degrees, or shaft position.
      Provide exactly 3 short answer options (each under 10 words).
      Respond ONLY with valid JSON: {"question": "...", "options": ["...", "...", "..."]}`
   : `Based on the fault and answers, provide the diagnosis.
