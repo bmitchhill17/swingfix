@@ -143,7 +143,8 @@ Their answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}
 Question number: ${questionCount + 1} of ${maxQuestions}.
 
 ${questionCount < maxQuestions - 1
-  ? `Ask ONE precise diagnostic follow-up question to narrow down the root cause.
+  ? `Ask ONE diagnostic follow-up question to narrow down the root cause.
+     IMPORTANT: Questions must be based on what the golfer can OBSERVE about their ball flight or body feel — never ask about technical mechanics like clubface angle, swing path degrees, or shaft position. Ask things like where the ball starts, how high it flies, when the curve happens, or what they feel during the swing.
      Provide exactly 3 short answer options (each under 10 words).
      Respond ONLY with valid JSON: {"question": "...", "options": ["...", "...", "..."]}`
   : `Based on the fault and answers, provide the diagnosis.
