@@ -362,7 +362,7 @@ Answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}
 
 Rules:
 - ONLY ask questions about what the golfer can see by watching the ball in the air or on the ground. No exceptions.
-- Allowed question topics: where the ball starts relative to the target (left, right, straight), when any curve happens (immediately, mid flight, late), how high or low the ball flies, how far offline the ball finishes, divot location (in front of ball, behind ball, no divot), whether the ball rolls out or stops quickly after landing
+- Allowed question topics: where the ball starts relative to the target (left, right, straight), when any curve happens (immediately, mid flight, late), how high or low the ball flies, how far offline the ball finishes, ${selectedClub === 'Driver' || selectedClub === 'Fairway wood or hybrid' ? 'whether the ball rolls out or stops quickly after landing' : 'divot location (in front of ball, behind ball, no divot), whether the ball rolls out or stops quickly after landing'}
 - NEVER ask about setup, address position, how far from the ball they stand, grip, posture, or anything they would have to look down or think about at address
 - NEVER ask the golfer to compare this shot to what feels normal or what they usually do
 - NEVER ask about what the golfer feels in their body during the swing
