@@ -7,8 +7,8 @@ export default async function handler(req, res) {
     console.log('Request body:', JSON.stringify(req.body));
 
     const payload = {
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+  model: 'claude-haiku-4-5-20251001',
+  max_tokens: 500,
       system: req.body.system,
       messages: req.body.messages,
     };
