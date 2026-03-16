@@ -3,119 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Golf Swing Analyzer</title>
+  <title>SwingFix</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; min-height: 100vh; padding: 1rem; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #f7f7f5; min-height: 100vh; padding: 1rem; }
     .app { max-width: 540px; margin: 0 auto; padding: 1.5rem 0; }
-    .header { text-align: center; margin-bottom: 2rem; }
-    .header h1 { font-size: 24px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
-    .header p { font-size: 14px; color: #666; }
-    .logo { font-size: 36px; margin-bottom: 8px; }
-    .card { background: white; border: 1px solid #e8e8e8; border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; }
-    .section-label { font-size: 11px; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
-    .fault-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .fault-btn { background: #f9f9f7; border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px 12px; cursor: pointer; text-align: left; transition: all 0.2s; }
-    .fault-btn:hover { border-color: #2d7a4f; background: #f0f8f4; }
-    .fault-btn .icon { font-size: 22px; margin-bottom: 6px; display: block; }
+    .sf-header { background: #fff; border: 1px solid #e4e4df; border-radius: 14px; padding: 1.75rem 1.5rem 1.25rem; text-align: center; margin-bottom: 1rem; }
+    .sf-wordmark { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: #1a3d25; letter-spacing: 0.02em; margin-bottom: 4px; }
+    .sf-wordmark span { color: #c9a84c; }
+    .sf-tagline { font-size: 12px; color: #888; letter-spacing: 0.03em; }
+    .card { background: #fff; border: 1px solid #e4e4df; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+    .section-label { font-size: 10px; color: #1a3d25; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 1rem; }
+    .handed-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .handed-btn { background: #f7f7f5; border: 1px solid #e4e4df; border-radius: 20px; padding: 5px 14px; font-size: 12px; color: #1a3d25; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; }
+    .fault-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .fault-btn { background: #f7f7f5; border: 1px solid #e4e4df; border-radius: 10px; padding: 14px 12px; cursor: pointer; text-align: left; transition: all 0.2s; }
+    .fault-btn:hover { border-color: #1a3d25; background: #f0f8f4; }
+    .fault-btn .icon { font-size: 18px; margin-bottom: 6px; display: block; }
     .fault-btn .name { font-size: 13px; font-weight: 600; color: #1a1a1a; display: block; }
-    .fault-btn .desc { font-size: 12px; color: #888; display: block; margin-top: 2px; }
-    .progress-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; margin-bottom: 2rem; }
-    .progress-fill { height: 100%; background: #2d7a4f; border-radius: 2px; transition: width 0.4s ease; }
-    .back-btn { background: transparent; border: none; cursor: pointer; font-size: 13px; color: #888; padding: 0 0 1rem 0; display: flex; align-items: center; gap: 4px; }
-    .back-btn:hover { color: #1a1a1a; }
-    .question-text { font-size: 17px; font-weight: 500; color: #1a1a1a; margin-bottom: 1.5rem; line-height: 1.5; }
-    .option-btn { width: 100%; background: #f9f9f7; border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px 16px; cursor: pointer; text-align: left; margin-bottom: 8px; font-size: 14px; color: #1a1a1a; transition: all 0.2s; line-height: 1.4; }
-    .option-btn:hover { border-color: #2d7a4f; background: #f0f8f4; }
-    .impact-fault-card { background: #fff8ec; border: 1px solid #f0d080; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-    .impact-fault-label { font-size: 11px; color: #a07800; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
-    .impact-fault-title { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-    .root-cause-card { background: #f0f8f4; border: 1px solid #b8dfc8; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-    .root-cause-label { font-size: 11px; color: #2d7a4f; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
-    .root-cause-title { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
-    .root-cause-desc { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
-    .drill-box { background: white; border: 1px solid #e8e8e8; border-radius: 8px; padding: 10px 12px; }
-    .drill-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .fault-btn .desc { font-size: 11px; color: #888; display: block; margin-top: 2px; }
+    .club-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .club-btn { background: #f7f7f5; border: 1px solid #e4e4df; border-radius: 10px; padding: 14px 12px; cursor: pointer; text-align: left; transition: all 0.2s; }
+    .club-btn:hover { border-color: #1a3d25; background: #f0f8f4; }
+    .club-btn .icon { font-size: 18px; margin-bottom: 6px; display: block; }
+    .club-btn .name { font-size: 13px; font-weight: 600; color: #1a1a1a; display: block; }
+    .club-btn .desc { font-size: 11px; color: #888; display: block; margin-top: 2px; }
+    .progress-bar { width: 100%; height: 3px; background: #e4e4df; border-radius: 2px; margin-bottom: 1.5rem; }
+    .progress-fill { height: 100%; background: #1a3d25; border-radius: 2px; transition: width 0.4s ease; }
+    .back-btn { background: transparent; border: none; cursor: pointer; font-size: 13px; color: #888; padding: 0 0 1rem 0; display: flex; align-items: center; gap: 4px; font-family: 'Inter', sans-serif; }
+    .back-btn:hover { color: #1a3d25; }
+    .question-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; color: #1a1a1a; margin-bottom: 1.25rem; line-height: 1.5; }
+    .option-btn { width: 100%; background: #f7f7f5; border: 1px solid #e4e4df; border-radius: 10px; padding: 13px 16px; cursor: pointer; text-align: left; margin-bottom: 8px; font-size: 14px; color: #1a1a1a; font-family: 'Inter', sans-serif; transition: all 0.2s; line-height: 1.4; }
+    .option-btn:hover { border-color: #1a3d25; background: #f0f8f4; }
+    .impact-card { background: #1a3d25; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .impact-label { font-size: 10px; color: #c9a84c; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+    .impact-title { font-family: 'Playfair Display', serif; font-size: 18px; color: #f5f0e8; font-weight: 600; }
+    .result-intro { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 1rem; }
+    .cause-card { background: #fff; border: 1px solid #e4e4df; border-radius: 12px; padding: 1.25rem; margin-bottom: 8px; }
+    .cause-num { display: inline-block; background: #f0f8f4; color: #1a3d25; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid #c0ddc9; }
+    .cause-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+    .cause-desc { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+    .drill-box { background: #faf8f2; border: 1px solid #e8ddb5; border-radius: 8px; padding: 10px 12px; }
+    .drill-label { font-size: 10px; color: #9a7a20; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 4px; }
     .drill-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
     .drill-desc { font-size: 13px; color: #666; line-height: 1.5; }
-    .restart-btn { width: 100%; background: transparent; border: 1px solid #ddd; border-radius: 10px; padding: 12px; cursor: pointer; font-size: 14px; color: #666; margin-top: 1rem; transition: background 0.2s; }
-    .restart-btn:hover { background: #f0f0f0; }
+    .restart-btn { width: 100%; background: transparent; border: 1px solid #e4e4df; border-radius: 10px; padding: 12px; cursor: pointer; font-size: 14px; color: #888; margin-top: 0.5rem; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .restart-btn:hover { border-color: #1a3d25; color: #1a3d25; }
     .ai-thinking { display: flex; align-items: center; gap: 10px; padding: 1rem 0; color: #888; font-size: 14px; }
-    .spinner { width: 18px; height: 18px; border: 2px solid #eee; border-top-color: #2d7a4f; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+    .spinner { width: 18px; height: 18px; border: 2px solid #e4e4df; border-top-color: #1a3d25; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .error-msg { background: #fff0f0; border: 1px solid #ffcccc; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #cc3333; margin-bottom: 1rem; }
-    .result-intro { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 1.25rem; }
-    .divider { border: none; border-top: 1px solid #eee; margin: 1.25rem 0; }
+    .shank-note { background: #f0f8f4; border: 1px solid #c0ddc9; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #1a3d25; margin-bottom: 1rem; line-height: 1.6; }
   </style>
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="logo">⛳</div>
-    <h1>Golf Swing Analyzer</h1>
-    <p>Diagnose your swing fault and get personalized fixes</p>
+  <div class="sf-header">
+    <div class="sf-wordmark">Swing<span>Fix</span></div>
+    <div class="sf-tagline">Diagnose your fault · Get personalized fixes</div>
   </div>
 
   <div id="screen-select">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <div class="handed-row">
         <div class="section-label" style="margin-bottom:0;">What's happening to your ball?</div>
-        <button id="handed-toggle" onclick="toggleHanded()" style="background:#f9f9f7; border:1px solid #e8e8e8; border-radius:20px; padding:5px 12px; font-size:12px; cursor:pointer; color:#666;">⛳ Right-handed</button>
+        <button class="handed-btn" id="handed-toggle" onclick="toggleHanded()">Right-handed</button>
       </div>
       <div class="fault-grid" id="fault-grid"></div>
     </div>
   </div>
 
-<div id="screen-club" style="display:none">
+  <div id="screen-club" style="display:none">
     <button class="back-btn" onclick="restart()">← back</button>
     <div class="card">
       <div class="section-label">Which club are you hitting?</div>
-      <div class="fault-grid">
-        <button class="fault-btn" onclick="selectClub('Driver')">
-          <span class="icon">🏌️</span>
-          <span class="name">Driver</span>
-          <span class="desc">1 wood, tee shots</span>
-        </button>
-        <button class="fault-btn" onclick="selectClub('Fairway wood or hybrid')">
-          <span class="icon">🪵</span>
-          <span class="name">Wood / Hybrid</span>
-          <span class="desc">3, 5 wood, hybrids</span>
-        </button>
-        <button class="fault-btn" onclick="selectClub('Long iron')">
-          <span class="icon">📏</span>
-          <span class="name">Long iron</span>
-          <span class="desc">3, 4, 5 iron</span>
-        </button>
-        <button class="fault-btn" onclick="selectClub('Mid or short iron')">
-          <span class="icon">⛳</span>
-          <span class="name">Mid / Short iron</span>
-          <span class="desc">6, 7, 8, 9 iron</span>
-        </button>
-        <button class="fault-btn" onclick="selectClub('Wedge')">
-          <span class="icon">🎯</span>
-          <span class="name">Wedge</span>
-          <span class="desc">PW, GW, SW, LW</span>
-        </button>
-        <button class="fault-btn" onclick="selectClub('All clubs')">
-          <span class="icon">🔄</span>
-          <span class="name">All clubs</span>
-          <span class="desc">Happens with everything</span>
-        </button>
+      <div class="club-grid">
+        <button class="club-btn" onclick="selectClub('Driver')"><span class="icon">🏌️</span><span class="name">Driver</span><span class="desc">1 wood, tee shots</span></button>
+        <button class="club-btn" onclick="selectClub('Fairway wood or hybrid')"><span class="icon">🪵</span><span class="name">Wood / Hybrid</span><span class="desc">3, 5 wood, hybrids</span></button>
+        <button class="club-btn" onclick="selectClub('Long iron')"><span class="icon">📏</span><span class="name">Long iron</span><span class="desc">3, 4, 5 iron</span></button>
+        <button class="club-btn" onclick="selectClub('Mid or short iron')"><span class="icon">⛳</span><span class="name">Mid / Short iron</span><span class="desc">6, 7, 8, 9 iron</span></button>
+        <button class="club-btn" onclick="selectClub('Wedge')"><span class="icon">🎯</span><span class="name">Wedge</span><span class="desc">PW, GW, SW, LW</span></button>
+        <button class="club-btn" onclick="selectClub('All clubs')"><span class="icon">🔄</span><span class="name">All clubs</span><span class="desc">Happens with everything</span></button>
       </div>
     </div>
   </div>
-  
+
   <div id="screen-questions" style="display:none">
     <button class="back-btn" onclick="goBack()">← back</button>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-    <div class="card">
-      <div id="question-area"></div>
-    </div>
+    <div class="card"><div id="question-area"></div></div>
   </div>
 
   <div id="screen-result" style="display:none">
     <button class="back-btn" onclick="restart()">← start over</button>
-    <div class="card" id="result-area"></div>
+    <div id="result-area"></div>
     <button class="restart-btn" onclick="restart()">Analyze another fault</button>
   </div>
 </div>
@@ -124,7 +106,7 @@
 const faults = [
   { id: 'slice', icon: '↗', name: 'Slice', desc: 'Ball curves hard right' },
   { id: 'hook', icon: '↖', name: 'Hook', desc: 'Ball curves hard left' },
-  { id: 'fat', icon: '⛳', name: 'Fat shot', desc: 'Hitting ground first' },
+  { id: 'fat', icon: '⬇', name: 'Fat shot', desc: 'Hitting ground first' },
   { id: 'thin', icon: '—', name: 'Thin / topped', desc: 'Catching it too high' },
   { id: 'push', icon: '→', name: 'Push right', desc: 'Ball starts & stays right' },
   { id: 'pull', icon: '←', name: 'Pull left', desc: 'Ball starts & stays left' },
@@ -149,7 +131,7 @@ const knowledgeBase = {
         rootCauses: [
           { name: 'Over the top move', desc: 'On the downswing the shoulders spin outward and the club is thrown over the correct plane, creating a steep out-to-in path that cuts across the ball.', drill: { name: 'Headcover under trail arm drill', desc: 'Place a headcover under your trail armpit and keep it there on the downswing. This forces your elbow to stay connected and prevents the over the top move.' } },
           { name: 'Shoulders opening too early', desc: 'The lead shoulder pulls away from the ball too soon on the downswing, dragging the club outside the ideal path.', drill: { name: 'Slow motion downswing drill', desc: 'Practice starting your downswing with your hips only, keeping your shoulders closed as long as possible. Do this in slow motion 10 times before each session.' } },
-          { name: 'Weight hanging on trail foot', desc: 'Failing to shift weight to the lead side forces the body to compensate by swinging across the ball from outside to inside.', drill: { name: 'Step drill', desc: 'Start with feet together, step toward the target with your lead foot as you begin the downswing. This forces proper weight transfer and encourages an in-to-out or neutral path.' } },
+          { name: 'Weight hanging on trail foot', desc: 'Failing to shift weight to the lead side forces the body to compensate by swinging across the ball from outside to inside.', drill: { name: 'Step drill', desc: 'Start with feet together, step toward the target with your lead foot as you begin the downswing. This forces proper weight transfer and encourages a neutral path.' } },
         ]
       }
     ]
@@ -159,10 +141,10 @@ const knowledgeBase = {
       {
         name: 'Closed clubface at impact',
         rootCauses: [
-          { name: 'Strong grip', desc: 'Hands rotated too far to the right on the club cause the face to close through impact, sending the ball hard left.', drill: { name: 'Neutral grip drill', desc: 'Rotate both hands left at address until you can see only 1-2 knuckles on your lead hand. Hit 20 balls at 50% speed until the new grip feels natural.' } },
+          { name: 'Strong grip', desc: 'Hands rotated too far to the right on the club cause the face to close through impact, sending the ball hard left.', drill: { name: 'Neutral grip drill', desc: 'Rotate both hands left at address until you can see only 1-2 knuckles on your lead hand. Hit chips and then full shots at reduced speed to adjust.' } },
           { name: 'Overactive hands and forearms', desc: 'Rolling the forearms over aggressively through impact closes the face too quickly and too much, producing a hook.', drill: { name: 'Slow release drill', desc: 'Practice hitting punch shots with a shortened follow through, focusing on keeping the face looking at the target longer through impact rather than rotating over quickly.' } },
           { name: 'Bowed lead wrist at the top', desc: 'A bowed lead wrist at the top of the swing closes the clubface, making it arrive at impact already shut.', drill: { name: 'Wrist position check drill', desc: 'At the top of your backswing pause and check your lead wrist is flat, not bowed forward. Film yourself from behind to check this position regularly.' } },
-          { name: 'Closed clubface at address', desc: 'Starting with the face aimed left of target means it is likely to be even more closed at impact.', drill: { name: 'Face check drill', desc: 'Before every shot use a club laid along the face to verify it is aimed at the target, not left of it. Build this into your pre-shot routine.' } },
+          { name: 'Closed clubface at address', desc: 'Starting with the face aimed left of target means it is likely to be even more closed at impact.', drill: { name: 'Face check drill', desc: 'Before every shot lay a club across the face and verify it points at the target, not left of it. Build this check into your pre-shot routine.' } },
         ]
       },
       {
@@ -170,7 +152,7 @@ const knowledgeBase = {
         rootCauses: [
           { name: 'Trail elbow too far behind body', desc: 'When the trail elbow gets stuck too far behind the body on the downswing it forces the club to track too far to the right, creating an exaggerated in-to-out path.', drill: { name: 'Elbow lead drill', desc: 'Feel like your trail elbow leads your trail hand on the downswing and points at the ground in front of the ball. Practice this move in slow motion 15 times.' } },
           { name: 'Body stalling through impact', desc: 'When the body rotation stops through the hitting zone the hands and forearms take over and flip the club, closing the face and sending the ball left.', drill: { name: 'Belt buckle drill', desc: 'Focus on rotating your belt buckle to face the target at impact and beyond. If the buckle stalls, the hands flip. Keep turning all the way to a full balanced finish.' } },
-          { name: 'Early extension', desc: 'The hips thrusting toward the ball on the downswing blocks the body from rotating properly, causing the arms to swing too far from the inside.', drill: { name: 'Chair drill', desc: 'Place a chair just behind your trail hip at address. Practice making swings without your hips bumping back into the chair on the downswing. This keeps you in posture and rotating correctly.' } },
+          { name: 'Early extension', desc: 'The hips thrusting toward the ball on the downswing blocks the body from rotating properly, causing the arms to swing too far from the inside.', drill: { name: 'Chair drill', desc: 'Place a chair just behind your trail hip at address. Practice making swings without your hips bumping back into the chair on the downswing.' } },
         ]
       }
     ]
@@ -181,15 +163,15 @@ const knowledgeBase = {
         name: 'Low point too far behind the ball',
         rootCauses: [
           { name: 'Weight hanging on trail foot', desc: 'Failing to shift weight to the lead side causes the swing to bottom out behind the ball rather than in front of or at it.', drill: { name: 'Lead foot only drill', desc: 'Hit short irons standing only on your lead foot. This forces you to feel what proper weight transfer and a forward low point feels like.' } },
-          { name: 'Reverse pivot', desc: 'Shifting weight to the lead foot on the backswing and then falling back to the trail foot on the downswing is the opposite of what should happen, causing the club to hit the ground early.', drill: { name: 'Feet together drill', desc: 'Hit shots with your feet together. This eliminates the ability to sway and forces your weight to transfer correctly through the ball.' } },
-          { name: 'Casting the club', desc: 'Releasing the wrist hinge too early on the downswing throws the club head away from the body too soon and causes it to bottom out well before the ball.', drill: { name: 'Lag drill', desc: 'On the downswing feel like you are holding the angle between your lead arm and the club shaft as long as possible before releasing through impact. Practice half swings focusing only on this feeling.' } },
+          { name: 'Reverse pivot', desc: 'Shifting weight to the lead foot on the backswing and then falling back to the trail foot on the downswing causes the club to hit the ground too early.', drill: { name: 'Feet together drill', desc: 'Hit shots with your feet together. This eliminates the ability to sway and forces your weight to transfer correctly through the ball.' } },
+          { name: 'Casting the club', desc: 'Releasing the wrist hinge too early on the downswing throws the club head away from the body too soon and causes it to bottom out well before the ball.', drill: { name: 'Lag drill', desc: 'On the downswing feel like you are holding the angle between your lead arm and the club shaft as long as possible before releasing through impact.' } },
         ]
       },
       {
         name: 'Swing arc too wide and deep',
         rootCauses: [
-          { name: 'Standing too close to the ball', desc: 'Being too close forces the swing to bottom out behind the ball as the club has nowhere to go but into the ground early.', drill: { name: 'Arm hang drill', desc: 'At address let your arms hang naturally from your shoulders, then grip the club. If you have to reach out or bend your arms significantly you are standing at the wrong distance.' } },
-          { name: 'Early extension', desc: 'Hips thrusting toward the ball on the downswing pushes the whole swing arc forward and into the ground behind the ball.', drill: { name: 'Posture hold drill', desc: 'Set up in your address posture and focus on maintaining the exact same spine angle and hip distance from the ball all the way through impact. Film from the side to check.' } },
+          { name: 'Standing too close to the ball', desc: 'Being too close forces the swing to bottom out behind the ball as the club has nowhere to go but into the ground early.', drill: { name: 'Arm hang drill', desc: 'At address let your arms hang naturally from your shoulders, then grip the club. This gives you the correct distance from the ball every time.' } },
+          { name: 'Early extension', desc: 'Hips thrusting toward the ball on the downswing pushes the entire swing arc forward and into the ground behind the ball.', drill: { name: 'Posture hold drill', desc: 'Set up in your address posture and focus on maintaining the exact same spine angle and hip distance from the ball all the way through impact.' } },
           { name: 'Swaying off the ball on the backswing', desc: 'Moving the entire body laterally away from the target on the backswing shifts the low point of the swing back with it, causing fat contact.', drill: { name: 'Trail knee drill', desc: 'On the backswing feel like your trail knee stays in the same position it was at address. If the knee straightens and the hip sways out, you are swaying.' } },
         ]
       }
@@ -202,16 +184,16 @@ const knowledgeBase = {
         rootCauses: [
           { name: 'Weight too far forward at address', desc: 'Starting with too much weight on the lead foot moves the bottom of the swing arc forward, causing the club to already be rising when it reaches the ball.', drill: { name: 'Even weight drill', desc: 'At address feel 50/50 weight distribution between both feet for irons. Use a mirror to check your head is centered over the ball, not ahead of it.' } },
           { name: 'Ball positioned too far back in stance', desc: 'With the ball too far back the club has already passed its low point before reaching the ball and is on the way up, striking the ball thin.', drill: { name: 'Ball position drill', desc: 'For mid irons the ball should be in the center of your stance. Place two alignment sticks on the ground to mark ball position and practice hitting from the correct spot.' } },
-          { name: 'Sliding hips too far forward', desc: 'Over-sliding the hips toward the target on the downswing moves the low point of the arc too far forward and causes the club to be rising at impact.', drill: { name: 'Rotation over slide drill', desc: 'Feel like your hips rotate rather than slide on the downswing. Imagine your lead hip turning behind you rather than moving toward the target. Practice slow motion swings focusing on this.' } },
+          { name: 'Sliding hips too far forward', desc: 'Over-sliding the hips toward the target on the downswing moves the low point of the arc too far forward and causes the club to be rising at impact.', drill: { name: 'Rotation over slide drill', desc: 'Feel like your hips rotate rather than slide on the downswing. Imagine your lead hip turning behind you rather than moving toward the target.' } },
         ]
       },
       {
         name: 'Swing arc too narrow and shallow',
         rootCauses: [
-          { name: 'Lifting up through impact', desc: 'Trying to help the ball into the air by raising the body through impact narrows the swing arc and causes the club to strike the top of the ball.', drill: { name: 'Stay down drill', desc: 'Focus on keeping your head and spine at the same height through impact. A good thought is to try to see the club contact the ball before you look up at the shot.' } },
-          { name: 'Loss of posture', desc: 'The spine angle rising during the downswing brings the club up with it, causing thin contact or a complete top.', drill: { name: 'Spine angle drill', desc: 'Set up to the ball and hold your finish position. Check that your spine is still tilted forward at the same angle it was at address. If you are standing straight up you have lost posture.' } },
-          { name: 'Standing too far from the ball', desc: 'Reaching for the ball causes tension in the arms and promotes a swing that bottoms out further from the body, often resulting in thin contact.', drill: { name: 'Arm hang drill', desc: 'Let your arms hang naturally from your shoulders at address before gripping. Add just a slight forward bend from the hips and flex in the knees. Do not reach for the ball.' } },
-          { name: 'Early extension', desc: 'Hips thrusting toward the ball push the whole arc up and outward, resulting in the club catching the ball on the upswing.', drill: { name: 'Hip rotation drill', desc: 'Place a ball or headcover behind your trail hip. On the downswing rotate your hips without letting them push forward into the ball. The object behind the hip should not be knocked away.' } },
+          { name: 'Lifting up through impact', desc: 'Trying to help the ball into the air by raising the body through impact narrows the swing arc and causes the club to strike the top of the ball.', drill: { name: 'Stay down drill', desc: 'Focus on keeping your head and spine at the same height through impact. Try to see the club contact the ball before you look up at the shot.' } },
+          { name: 'Loss of posture', desc: 'The spine angle rising during the downswing brings the club up with it, causing thin contact or a complete top.', drill: { name: 'Spine angle drill', desc: 'Hold your finish position and check that your spine is still tilted forward at the same angle it was at address. Standing straight up means you have lost posture.' } },
+          { name: 'Standing too far from the ball', desc: 'Reaching for the ball causes tension in the arms and promotes a swing that bottoms out further from the body, often resulting in thin contact.', drill: { name: 'Arm hang drill', desc: 'Let your arms hang naturally from your shoulders at address before gripping. Add just a slight forward bend from the hips and flex in the knees.' } },
+          { name: 'Early extension', desc: 'Hips thrusting toward the ball push the whole arc up and outward, resulting in the club catching the ball on the upswing.', drill: { name: 'Hip rotation drill', desc: 'Place a headcover behind your trail hip. On the downswing rotate your hips without letting them push forward. The headcover should not be knocked away.' } },
         ]
       }
     ]
@@ -221,17 +203,17 @@ const knowledgeBase = {
       {
         name: 'Clubface open relative to swing path',
         rootCauses: [
-          { name: 'Blocked rotation through impact', desc: 'The hips and body stop rotating through the hitting zone, leaving the face open and pushing the ball to the right.', drill: { name: 'Belt buckle drill', desc: 'Focus on rotating your belt buckle to face the target at and through impact. Count to yourself — if the buckle stalls before the target line, your rotation is stopping too early.' } },
-          { name: 'Failing to rotate forearms', desc: 'The forearms need to rotate through impact to square the face. If they remain passive the face stays open relative to the path and the ball goes right.', drill: { name: 'Forearm rotation drill', desc: 'Make slow half swings focusing on the feeling of the trail forearm rotating over the lead forearm just after impact. Gradually build speed over 20 repetitions.' } },
-          { name: 'Weak grip', desc: 'Hands rotated too far left on the club make it very hard to square or close the face at impact, leaving it open and pushing the ball right.', drill: { name: 'Strong grip drill', desc: 'Rotate both hands to the right at address until you can see 2-3 knuckles on your lead hand. Hit 10 balls at half speed to adjust to the new grip feel.' } },
+          { name: 'Blocked rotation through impact', desc: 'The hips and body stop rotating through the hitting zone, leaving the face open and pushing the ball to the right.', drill: { name: 'Belt buckle drill', desc: 'Focus on rotating your belt buckle to face the target at and through impact. If the buckle stalls before the target line, your rotation is stopping too early.' } },
+          { name: 'Failing to rotate forearms', desc: 'The forearms need to rotate through impact to square the face. If they remain passive the face stays open and the ball goes right.', drill: { name: 'Forearm rotation drill', desc: 'Make slow half swings focusing on the feeling of the trail forearm rotating over the lead forearm just after impact. Gradually build speed over 20 repetitions.' } },
+          { name: 'Weak grip', desc: 'Hands rotated too far left on the club make it very hard to square the face at impact, leaving it open and pushing the ball right.', drill: { name: 'Strong grip drill', desc: 'Rotate both hands to the right at address until you can see 2-3 knuckles on your lead hand. Hit 10 balls at half speed to adjust to the new grip feel.' } },
         ]
       },
       {
         name: 'Swing path too far in-to-out',
         rootCauses: [
           { name: 'Trail elbow too far from body', desc: 'The trail elbow getting stuck behind the body on the downswing forces the club to track too far to the right of the target line through impact.', drill: { name: 'Elbow tuck drill', desc: 'On the downswing feel your trail elbow brush against your trail hip. This keeps the elbow in front of the body and prevents an exaggerated in-to-out path.' } },
-          { name: 'Shoulder alignment too far right', desc: 'Setting up with the shoulders aimed to the right of the target naturally promotes an in-to-out swing path and a push.', drill: { name: 'Alignment check drill', desc: 'Place two alignment sticks on the ground — one at your feet and one at the ball pointing at the target. Check that your shoulders are parallel to the target line, not aimed right.' } },
-          { name: 'Ball too far back in stance', desc: 'With the ball back in the stance the club is still moving on its inside to out arc and has not yet reached the point where the path straightens out toward the target.', drill: { name: 'Ball position drill', desc: 'Move the ball forward in your stance by one ball width at a time and note how the start direction of the ball changes. Find the position where the ball starts on your target line.' } },
+          { name: 'Shoulder alignment too far right at address', desc: 'Setting up with the shoulders aimed to the right of the target naturally promotes an in-to-out swing path and a push.', drill: { name: 'Alignment check drill', desc: 'Place two alignment sticks on the ground — one at your feet and one at the ball pointing at the target. Check that your shoulders are parallel to the target line.' } },
+          { name: 'Ball too far back in stance', desc: 'With the ball back in the stance the club is still moving on its inside to out arc and has not yet reached the point where the path straightens toward the target.', drill: { name: 'Ball position drill', desc: 'Move the ball forward in your stance by one ball width at a time and note how the start direction changes. Find the position where the ball starts on your target line.' } },
         ]
       }
     ]
@@ -242,16 +224,16 @@ const knowledgeBase = {
         name: 'Swing path too far out-to-in',
         rootCauses: [
           { name: 'Shoulders opening too early', desc: 'The lead shoulder pulling away from the ball too soon on the downswing throws the club outside the ideal path and cuts across the ball from out to in.', drill: { name: 'Shoulder delay drill', desc: 'On the downswing initiate the movement with your hips only and feel your shoulders stay closed as long as possible. Do this in slow motion 10 times before hitting balls.' } },
-          { name: 'Overactive lead arm pull', desc: 'Pulling hard with the lead arm on the downswing drags the club across the ball from outside to inside, sending it left of the target.', drill: { name: 'Trail hand only drill', desc: 'Hit short chip shots using only your trail hand. This trains you to feel the trail side pushing through the ball rather than the lead side pulling, which balances out the swing direction.' } },
+          { name: 'Overactive lead arm pull', desc: 'Pulling hard with the lead arm on the downswing drags the club across the ball from outside to inside, sending it left of the target.', drill: { name: 'Trail hand only drill', desc: 'Hit short chip shots using only your trail hand. This trains you to feel the trail side pushing through the ball rather than the lead side pulling.' } },
           { name: 'Ball too far forward in stance', desc: 'With the ball too far forward the club has already passed the bottom of its arc and is tracking back to the inside, pulling the ball left.', drill: { name: 'Ball position drill', desc: 'Move the ball back in your stance one ball width at a time. Notice how the start direction improves as the ball position moves toward the center of your stance.' } },
-          { name: 'Alignment too far left', desc: 'If the body is aimed left of target at address the swing will naturally follow that line and the ball will start left.', drill: { name: 'Alignment stick drill', desc: 'Place an alignment stick at your feet pointing at a target. Check that the stick and your shoulders are parallel to the target line and not aimed left of it.' } },
+          { name: 'Alignment too far left at address', desc: 'If the body is aimed left of target at address the swing will naturally follow that line and the ball will start left.', drill: { name: 'Alignment stick drill', desc: 'Place an alignment stick at your feet pointing at a target. Check that the stick and your shoulders are parallel to the target line and not aimed left of it.' } },
         ]
       },
       {
         name: 'Clubface closed relative to swing path',
         rootCauses: [
-          { name: 'Strong grip', desc: 'Hands rotated too far right on the club cause the face to close through impact and further left of the already left swing path.', drill: { name: 'Neutral grip drill', desc: 'Rotate both hands left at address until you can see only 1-2 knuckles on your lead hand. Hit chips and then full shots at reduced speed to adjust.' } },
-          { name: 'Overactive forearm rotation', desc: 'Rolling the forearms over too aggressively through impact closes the face too much relative to the path, adding extra left curve to a ball already pulling left.', drill: { name: 'Firm lead wrist drill', desc: 'Focus on keeping your lead wrist firm and flat through impact rather than letting the trail hand roll over. Practice impact position holds at a slow speed.' } },
+          { name: 'Strong grip', desc: 'Hands rotated too far right on the club cause the face to close through impact and send the ball further left.', drill: { name: 'Neutral grip drill', desc: 'Rotate both hands left at address until you can see only 1-2 knuckles on your lead hand. Hit chips and then full shots at reduced speed to adjust.' } },
+          { name: 'Overactive forearm rotation', desc: 'Rolling the forearms over too aggressively through impact closes the face too much, adding extra left curve to a ball already pulling left.', drill: { name: 'Firm lead wrist drill', desc: 'Focus on keeping your lead wrist firm and flat through impact rather than letting the trail hand roll over. Practice impact position holds at a slow speed.' } },
           { name: 'Closed clubface at address', desc: 'Starting with the face aimed left compounds the problem of an out-to-in path, sending the ball even further left.', drill: { name: 'Face square drill', desc: 'Before every shot lay a club across the face and verify it points at the target. Build this check into your pre-shot routine until a square face feels natural.' } },
         ]
       }
@@ -262,9 +244,9 @@ const knowledgeBase = {
       {
         name: 'Loss of clubhead speed',
         rootCauses: [
-          { name: 'Casting the club', desc: 'Releasing the wrist hinge too early on the downswing wastes the stored energy in the wrists before it can be delivered into the ball at maximum speed.', drill: { name: 'Lag and release drill', desc: 'On the downswing feel like you are holding the angle between your lead arm and the shaft as long as possible, then release it aggressively through the ball. Start with half swings and build up.' } },
-          { name: 'Grip too tight', desc: 'Excessive grip pressure creates tension throughout the arms and shoulders which restricts the free movement needed to generate speed.', drill: { name: 'Grip pressure drill', desc: 'On a scale of 1-10 aim for a grip pressure of 4-5. Before each swing consciously relax your hands and arms. Shake them out if needed. Tension is a speed killer.' } },
-          { name: 'Narrow swing arc', desc: 'Not fully extending the arms on the backswing creates a smaller arc which limits the distance the club can accelerate before impact.', drill: { name: 'Wide arc drill', desc: 'On the takeaway feel like you are pushing the club head as far away from your body as possible. The wider the arc on the backswing the more speed you can build on the way down.' } },
+          { name: 'Casting the club', desc: 'Releasing the wrist hinge too early on the downswing wastes the stored energy in the wrists before it can be delivered into the ball at maximum speed.', drill: { name: 'Lag and release drill', desc: 'On the downswing feel like you are holding the angle between your lead arm and the shaft as long as possible, then release it aggressively through the ball.' } },
+          { name: 'Grip too tight', desc: 'Excessive grip pressure creates tension throughout the arms and shoulders which restricts the free movement needed to generate speed.', drill: { name: 'Grip pressure drill', desc: 'On a scale of 1-10 aim for a grip pressure of 4-5. Before each swing consciously relax your hands and arms. Shake them out if needed — tension kills speed.' } },
+          { name: 'Narrow swing arc', desc: 'Not fully extending the arms on the backswing creates a smaller arc which limits the distance the club can accelerate before impact.', drill: { name: 'Wide arc drill', desc: 'On the takeaway feel like you are pushing the club head as far away from your body as possible. The wider the arc on the backswing the more speed you can build.' } },
         ]
       },
       {
@@ -272,7 +254,7 @@ const knowledgeBase = {
         rootCauses: [
           { name: 'Poor weight transfer', desc: 'Failing to shift weight properly to the lead side through impact reduces the power available at the point of contact.', drill: { name: 'Step through drill', desc: 'After impact let your trail foot step forward toward the target. This forces a full weight shift onto the lead side and trains the body to move through the ball correctly.' } },
           { name: 'Body rotation stalling', desc: 'When the body stops rotating through the hitting zone the arms slow down with it and the club loses speed before reaching the ball.', drill: { name: 'Full finish drill', desc: 'Every swing should finish with your weight on your lead foot, trail foot on its toe, and belt buckle facing the target. If you cannot hold a balanced finish your rotation is stalling.' } },
-          { name: 'Poor distance from the ball', desc: 'Standing too close or too far from the ball prevents a centered strike on the sweet spot and causes significant distance loss even with good swing mechanics.', drill: { name: 'Arm hang drill', desc: 'At address let your arms hang naturally from your shoulders before gripping. This is the correct distance. Too much reaching or too much crowding will cost you distance.' } },
+          { name: 'Poor distance from the ball', desc: 'Standing too close or too far from the ball prevents a centered strike on the sweet spot and causes significant distance loss even with good swing mechanics.', drill: { name: 'Arm hang drill', desc: 'At address let your arms hang naturally from your shoulders before gripping. Too much reaching or too much crowding will cost you distance and consistency.' } },
         ]
       }
     ]
@@ -280,19 +262,19 @@ const knowledgeBase = {
   shank: {
     impactFaults: [
       {
-        name: 'Contact on the hosel',
+        name: 'Club path too far outside through impact',
         rootCauses: [
-          { name: 'Standing too close to the ball', desc: 'Being too close to the ball at address puts the hosel directly in line with the ball, making hosel contact almost inevitable.', drill: { name: 'Toe contact drill', desc: 'Intentionally try to hit the ball off the toe of the club. This forces you to give yourself more room and naturally moves the contact point away from the hosel.' } },
-          { name: 'Swaying toward the ball', desc: 'Moving the body laterally toward the ball on the downswing effectively moves the hosel into the path of the ball even if setup was correct.', drill: { name: 'Alignment stick barrier drill', desc: 'Place an alignment stick in the ground just outside the ball. Practice swings where the club never reaches the stick. This trains you to keep the swing arc away from the ball.' } },
-          { name: 'Arms too far from the body', desc: 'Letting the arms drift away from the body on the downswing pushes the entire club outward and brings the hosel to the ball rather than the face.', drill: { name: 'Towel drill', desc: 'Tuck a small towel under both armpits at address and keep it there through the swing. If it falls out your arms have separated from your body. Hit 20 balls with the towel.' } },
+          { name: 'Over the top move', desc: 'The club being thrown over the top on the downswing creates a path that approaches the ball from too far outside, leading the hosel into contact before the face.', drill: { name: 'Headcover drill', desc: 'Place a headcover just outside the ball on the target line. Make swings where the club approaches from the inside and misses the headcover. This trains a neutral or in-to-out path.' } },
+          { name: 'Weight too far on toes', desc: 'Being balanced on the toes causes the body to fall forward toward the ball through the swing, moving the hosel into the impact zone.', drill: { name: 'Heel pressure drill', desc: 'At address feel slightly more pressure in your heels than your toes. Maintain this heel pressure through the swing to prevent falling forward into the ball.' } },
+          { name: 'Early extension toward the ball', desc: 'The hips and body thrusting toward the ball on the downswing moves the entire swing arc outward, increasing the chance of hosel contact.', drill: { name: 'Posture maintenance drill', desc: 'Focus on keeping the same distance between your hips and the ball throughout the entire swing. Any move toward the ball brings the hosel closer to striking it.' } },
         ]
       },
       {
-        name: 'Swing path too far outside',
+        name: 'Swing arc too wide — arms too far from body',
         rootCauses: [
-          { name: 'Over the top move', desc: 'The club being thrown over the top on the downswing creates a path that approaches the ball from too far outside, leading the hosel into contact before the face.', drill: { name: 'Headcover drill', desc: 'Place a headcover just outside the ball on the target line. Make swings where the club approaches from the inside and misses the headcover. This trains an in-to-out or neutral path.' } },
-          { name: 'Weight too far on toes', desc: 'Being balanced on the toes at address and through the swing causes the body to fall forward toward the ball, moving the hosel into impact.', drill: { name: 'Heel pressure drill', desc: 'At address feel slightly more pressure in your heels than your toes. Check this before every shot. During the swing maintain this heel pressure to prevent falling forward.' } },
-          { name: 'Early extension toward ball', desc: 'The hips and body thrusting toward the ball on the downswing moves the entire swing arc outward and increases the chance of hosel contact.', drill: { name: 'Posture maintenance drill', desc: 'Set up to the ball and focus on keeping the same distance between your hips and the ball through the entire swing. Any move toward the ball will bring the hosel closer to the ball too.' } },
+          { name: 'Standing too close to the ball', desc: 'Being too close to the ball at address puts the hosel directly in line with the ball, making hosel contact almost inevitable regardless of swing quality.', drill: { name: 'Toe contact drill', desc: 'Intentionally try to hit the ball off the toe of the club for a few shots. This forces you to give yourself more room and naturally moves contact away from the hosel.' } },
+          { name: 'Swaying toward the ball on the downswing', desc: 'Moving the body laterally toward the ball effectively moves the hosel into the path of the ball even if setup was correct.', drill: { name: 'Alignment stick barrier drill', desc: 'Place an alignment stick in the ground just outside the ball. Practice swings where the club never reaches the stick. This trains you to keep the arc away from the ball.' } },
+          { name: 'Arms drifting away from the body', desc: 'Letting the arms drift outward on the downswing pushes the entire club outward and brings the hosel to the ball rather than the face.', drill: { name: 'Towel drill', desc: 'Tuck a small towel under both armpits at address and keep it there through the swing. If it falls out your arms have separated from your body. Hit 20 balls with the towel in place.' } },
         ]
       }
     ]
@@ -300,15 +282,15 @@ const knowledgeBase = {
 };
 
 let selectedFault = null;
+let selectedClub = null;
 let conversationHistory = [];
 let answersSoFar = [];
 let questionsSoFar = [];
 let isLeftHanded = false;
-let selectedClub = null;
 
 function toggleHanded() {
   isLeftHanded = !isLeftHanded;
-  document.getElementById('handed-toggle').textContent = isLeftHanded ? '⛳ Left-handed' : '⛳ Right-handed';
+  document.getElementById('handed-toggle').textContent = isLeftHanded ? 'Left-handed' : 'Right-handed';
 }
 
 function renderFaultGrid() {
@@ -332,8 +314,12 @@ function selectFault(id, name, desc) {
 
 function selectClub(club) {
   selectedClub = club;
-  showScreen('questions');
-  askQuestion();
+  if (selectedFault.id === 'shank') {
+    showShankResult();
+  } else {
+    showScreen('questions');
+    askQuestion();
+  }
 }
 
 function showScreen(name) {
@@ -370,7 +356,7 @@ Club being used: ${selectedClub}
 Your knowledge base for this fault:
 ${kb}
 
-Your job is to ask observable questions to determine which impact fault and root causes are most likely. 
+Your job is to ask observable questions to determine which impact fault and root causes are most likely.
 Questions already asked: ${questionsSoFar.length ? questionsSoFar.join(' | ') : 'none'}
 Answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}`).join('; ') : 'none'}
 
@@ -378,17 +364,17 @@ Rules:
 - ONLY ask questions about what the golfer can see by watching the ball in the air or on the ground. No exceptions.
 - Allowed question topics: where the ball starts relative to the target (left, right, straight), when any curve happens (immediately, mid flight, late), how high or low the ball flies, how far offline the ball finishes, divot location (in front of ball, behind ball, no divot), whether the ball rolls out or stops quickly after landing
 - NEVER ask about setup, address position, how far from the ball they stand, grip, posture, or anything they would have to look down or think about at address
-- NEVER ask the golfer to compare this shot to what feels normal or what they usually do — for many golfers this fault IS normal and they have no reference point
-- NEVER ask about what the golfer feels in their body during the swing — shoulder rotation, weight shift, arm position, or any other swing sensation
+- NEVER ask the golfer to compare this shot to what feels normal or what they usually do
+- NEVER ask about what the golfer feels in their body during the swing
 - If a potential root cause cannot be confirmed through ball flight observation alone, include it in the results anyway rather than asking about it
 - Never repeat a question already asked
 - If the answers so far clearly point to specific root causes, respond with DIAGNOSE instead of asking more questions
 - Maximum 3 questions before diagnosing
 
-If asking another question respond ONLY with:
+If asking another question respond ONLY with valid JSON:
 {"action": "question", "question": "...", "options": ["...", "...", "..."]}
 
-If ready to diagnose respond ONLY with:
+If ready to diagnose respond ONLY with valid JSON:
 {"action": "diagnose", "impactFault": "exact impact fault name from knowledge base", "rootCauses": ["exact root cause name 1", "exact root cause name 2", "exact root cause name 3"]}
 List 3-5 most likely root causes ordered by likelihood. Use exact names from the knowledge base.`;
 
@@ -437,6 +423,32 @@ function selectAnswer(answer) {
   askQuestion();
 }
 
+function showShankResult() {
+  showScreen('result');
+  const kb = knowledgeBase.shank;
+  document.getElementById('result-area').innerHTML = `
+    <div class="shank-note">A shank is always caused by the hosel of the club making contact with the ball. Below are the most common swing causes — review each and try the drill that resonates most with your game.</div>
+    ${kb.impactFaults.map(impact => `
+      <div class="impact-card" style="margin-bottom:1rem;">
+        <div class="impact-label">Impact fault</div>
+        <div class="impact-title">${impact.name}</div>
+      </div>
+      ${impact.rootCauses.map((rc, i) => `
+        <div class="cause-card">
+          <span class="cause-num">Cause ${i + 1}</span>
+          <div class="cause-title">${rc.name}</div>
+          <div class="cause-desc">${rc.desc}</div>
+          <div class="drill-box">
+            <div class="drill-label">Drill</div>
+            <div class="drill-name">${rc.drill.name}</div>
+            <div class="drill-desc">${rc.drill.desc}</div>
+          </div>
+        </div>
+      `).join('')}
+    `).join('')}
+  `;
+}
+
 function showResult(parsed) {
   updateProgress(100);
   showScreen('result');
@@ -447,21 +459,19 @@ function showResult(parsed) {
     .map(name => impactFault.rootCauses.find(rc => rc.name === name))
     .filter(Boolean);
 
-  if (rootCauses.length === 0) {
-    rootCauses.push(...impactFault.rootCauses.slice(0, 3));
-  }
+  if (rootCauses.length === 0) rootCauses.push(...impactFault.rootCauses.slice(0, 3));
 
   document.getElementById('result-area').innerHTML = `
-    <div class="impact-fault-card">
-      <div class="impact-fault-label">Impact fault identified</div>
-      <div class="impact-fault-title">${impactFault.name}</div>
+    <div class="impact-card">
+      <div class="impact-label">Impact fault identified</div>
+      <div class="impact-title">${impactFault.name}</div>
     </div>
-    <p class="result-intro">Based on your answers, here are the most likely root causes. Review each one and try the drill for whichever feels most relevant to your swing.</p>
+    <p class="result-intro">Based on your answers, here are the most likely root causes. Try the drill for whichever feels most relevant to your swing.</p>
     ${rootCauses.map((rc, i) => `
-      <div class="root-cause-card">
-        <div class="root-cause-label">Likely cause ${i + 1}</div>
-        <div class="root-cause-title">${rc.name}</div>
-        <div class="root-cause-desc">${rc.desc}</div>
+      <div class="cause-card">
+        <span class="cause-num">Likely cause ${i + 1}</span>
+        <div class="cause-title">${rc.name}</div>
+        <div class="cause-desc">${rc.desc}</div>
         <div class="drill-box">
           <div class="drill-label">Drill</div>
           <div class="drill-name">${rc.drill.name}</div>
@@ -473,7 +483,7 @@ function showResult(parsed) {
 }
 
 function goBack() {
-  if (answersSoFar.length === 0) { restart(); return; }
+  if (answersSoFar.length === 0) { showScreen('club'); return; }
   answersSoFar.pop();
   questionsSoFar.pop();
   conversationHistory.pop();
@@ -483,10 +493,10 @@ function goBack() {
 
 function restart() {
   selectedFault = null;
+  selectedClub = null;
   conversationHistory = [];
   answersSoFar = [];
   questionsSoFar = [];
-  selectedClub = null;
   showScreen('select');
   updateProgress(0);
 }
