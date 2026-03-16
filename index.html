@@ -95,6 +95,7 @@ const faults = [
 let selectedFault = null;
 let conversationHistory = [];
 let answersSoFar = [];
+let questionsSoFar = [];
 let questionCount = 0;
 const maxQuestions = 3;
 let isLeftHanded = false;
@@ -150,6 +151,7 @@ Key ball flight laws for a RIGHT-handed golfer:
 Always apply these laws correctly. Never contradict basic ball flight laws.
 
 Their answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}`).join('; ') : 'none yet'}.
+Questions already asked (DO NOT repeat these): ${questionsSoFar.length ? questionsSoFar.join(' | ') : 'none yet'}.
 Question number: ${questionCount + 1} of ${maxQuestions}.
 
 ${questionCount < maxQuestions - 1
@@ -211,6 +213,7 @@ ${questionCount < maxQuestions - 1
 }
 
 function renderQuestion(data) {
+  questionsSoFar.push(data.question);
   document.getElementById('question-area').innerHTML = `
     <div class="question-text">${data.question}</div>
     ${data.options.map(opt => `<button class="option-btn" onclick="selectAnswer('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}
@@ -257,7 +260,7 @@ function goBack() {
 }
 
 function restart() {
-  selectedFault = null; conversationHistory = []; answersSoFar = []; questionCount = 0;
+  selectedFault = null; conversationHistory = []; answersSoFar = []; questionsSoFar = []; questionCount = 0;
   showScreen('select');
   document.getElementById('progress-fill').style.width = '0%';
 }
