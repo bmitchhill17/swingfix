@@ -371,10 +371,12 @@ Rules:
 - If the answers so far clearly point to specific root causes, respond with DIAGNOSE instead of asking more questions
 - Maximum 3 questions before diagnosing
 
-If asking another question respond ONLY with valid JSON:
+CRITICAL: Your entire response must be ONLY a single valid JSON object. No explanation, no markdown, no backticks, no text before or after the JSON. Just the raw JSON object and nothing else.
+
+If asking another question respond with ONLY this JSON:
 {"action": "question", "question": "...", "options": ["...", "...", "..."]}
 
-If ready to diagnose respond ONLY with valid JSON:
+If ready to diagnose respond with ONLY this JSON:
 {"action": "diagnose", "impactFault": "exact impact fault name from knowledge base", "rootCauses": ["exact root cause name 1", "exact root cause name 2", "exact root cause name 3"]}
 List 3-5 most likely root causes ordered by likelihood. Use exact names from the knowledge base.`;
 
