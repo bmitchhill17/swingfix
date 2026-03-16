@@ -57,7 +57,10 @@
 
   <div id="screen-select">
     <div class="card">
-      <div class="section-label">What's happening to your ball?</div>
+       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div class="section-label" style="margin-bottom:0;">What's happening to your ball?</div>
+        <button id="handed-toggle" onclick="toggleHanded()" style="background:#f9f9f7; border:1px solid #e8e8e8; border-radius:20px; padding:5px 12px; font-size:12px; cursor:pointer; color:#666;">⛳ Right-handed</button>
+      </div>
       <div class="fault-grid" id="fault-grid"></div>
     </div>
   </div>
@@ -94,6 +97,12 @@ let conversationHistory = [];
 let answersSoFar = [];
 let questionCount = 0;
 const maxQuestions = 3;
+let isLeftHanded = false;
+
+function toggleHanded() {
+  isLeftHanded = !isLeftHanded;
+  document.getElementById('handed-toggle').textContent = isLeftHanded ? '⛳ Left-handed' : '⛳ Right-handed';
+}
 
 function renderFaultGrid() {
   document.getElementById('fault-grid').innerHTML = faults.map(f => `
@@ -129,7 +138,7 @@ async function askQuestion() {
   updateProgress();
 
   const systemPrompt = `You are an expert PGA-level golf instructor diagnosing swing faults.
-The golfer has reported: "${selectedFault.name} — ${selectedFault.desc}".
+The golfer has reported: "${selectedFault.name} — ${selectedFault.desc}". The golfer is ${isLeftHanded ? 'LEFT-handed — so remember all directions are mirrored compared to a right-handed golfer' : 'right-handed'}.
 Their answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}`).join('; ') : 'none yet'}.
 Question number: ${questionCount + 1} of ${maxQuestions}.
 
