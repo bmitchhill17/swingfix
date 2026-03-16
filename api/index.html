@@ -28,4 +28,211 @@
     .option-btn { width: 100%; background: #f9f9f7; border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px 16px; cursor: pointer; text-align: left; margin-bottom: 8px; font-size: 14px; color: #1a1a1a; transition: all 0.2s; line-height: 1.4; }
     .option-btn:hover { border-color: #2d7a4f; background: #f0f8f4; }
     .diagnosis-card { background: #f0f8f4; border: 1px solid #b8dfc8; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-    .diagnosis-label { font-size: 11px; color: #2d7a4f; font-weight: 600; letter-spacing: 0.06em; text-
+    .diagnosis-label { font-size: 11px; color: #2d7a4f; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .diagnosis-title { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+    .diagnosis-desc { font-size: 14px; color: #444; line-height: 1.6; }
+    .section-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; margin-top: 1.25rem; }
+    .fix-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+    .fix-dot { width: 22px; height: 22px; border-radius: 50%; background: #2d7a4f; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .fix-dot span { font-size: 11px; font-weight: 600; color: white; }
+    .fix-text { font-size: 14px; color: #444; line-height: 1.5; }
+    .drill-item { background: #f9f9f7; border: 1px solid #e8e8e8; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+    .drill-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+    .drill-desc { font-size: 13px; color: #666; line-height: 1.5; }
+    .restart-btn { width: 100%; background: transparent; border: 1px solid #ddd; border-radius: 10px; padding: 12px; cursor: pointer; font-size: 14px; color: #666; margin-top: 1rem; transition: background 0.2s; }
+    .restart-btn:hover { background: #f0f0f0; }
+    .ai-thinking { display: flex; align-items: center; gap: 10px; padding: 1rem 0; color: #888; font-size: 14px; }
+    .spinner { width: 18px; height: 18px; border: 2px solid #eee; border-top-color: #2d7a4f; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg { background: #fff0f0; border: 1px solid #ffcccc; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #cc3333; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">⛳</div>
+    <h1>Golf Swing Analyzer</h1>
+    <p>Diagnose your swing fault and get personalized fixes</p>
+  </div>
+
+  <div id="screen-select">
+    <div class="card">
+      <div class="section-label">What's happening to your ball?</div>
+      <div class="fault-grid" id="fault-grid"></div>
+    </div>
+  </div>
+
+  <div id="screen-questions" style="display:none">
+    <button class="back-btn" onclick="goBack()">← back</button>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="card">
+      <div id="question-area"></div>
+    </div>
+  </div>
+
+  <div id="screen-result" style="display:none">
+    <button class="back-btn" onclick="restart()">← start over</button>
+    <div class="card" id="result-area"></div>
+    <button class="restart-btn" onclick="restart()">Analyze another fault</button>
+  </div>
+</div>
+
+<script>
+const faults = [
+  { id: 'slice', icon: '↗', name: 'Slice', desc: 'Ball curves hard right' },
+  { id: 'hook', icon: '↖', name: 'Hook', desc: 'Ball curves hard left' },
+  { id: 'fat', icon: '⛳', name: 'Fat shot', desc: 'Hitting ground first' },
+  { id: 'thin', icon: '—', name: 'Thin / topped', desc: 'Catching it too high' },
+  { id: 'pushright', icon: '→', name: 'Push right', desc: 'Ball starts & stays right' },
+  { id: 'pullleft', icon: '←', name: 'Pull left', desc: 'Ball starts & stays left' },
+  { id: 'loss_distance', icon: '📉', name: 'Loss of distance', desc: 'Not hitting it far enough' },
+  { id: 'shank', icon: '⚡', name: 'Shank', desc: 'Hosel contact, wild right' },
+];
+
+let selectedFault = null;
+let conversationHistory = [];
+let answersSoFar = [];
+let questionCount = 0;
+const maxQuestions = 3;
+
+function renderFaultGrid() {
+  document.getElementById('fault-grid').innerHTML = faults.map(f => `
+    <button class="fault-btn" onclick="selectFault('${f.id}', '${f.name}', '${f.desc}')">
+      <span class="icon">${f.icon}</span>
+      <span class="name">${f.name}</span>
+      <span class="desc">${f.desc}</span>
+    </button>
+  `).join('');
+}
+
+function selectFault(id, name, desc) {
+  selectedFault = { id, name, desc };
+  conversationHistory = [];
+  answersSoFar = [];
+  questionCount = 0;
+  showScreen('questions');
+  askQuestion();
+}
+
+function showScreen(name) {
+  document.getElementById('screen-select').style.display = name === 'select' ? '' : 'none';
+  document.getElementById('screen-questions').style.display = name === 'questions' ? '' : 'none';
+  document.getElementById('screen-result').style.display = name === 'result' ? '' : 'none';
+}
+
+function updateProgress() {
+  document.getElementById('progress-fill').style.width = (questionCount / maxQuestions * 100) + '%';
+}
+
+async function askQuestion() {
+  document.getElementById('question-area').innerHTML = '<div class="ai-thinking"><div class="spinner"></div> Analyzing your swing...</div>';
+  updateProgress();
+
+  const systemPrompt = `You are an expert PGA-level golf instructor diagnosing swing faults.
+The golfer has reported: "${selectedFault.name} — ${selectedFault.desc}".
+Their answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}`).join('; ') : 'none yet'}.
+Question number: ${questionCount + 1} of ${maxQuestions}.
+
+${questionCount < maxQuestions - 1
+  ? `Ask ONE precise diagnostic follow-up question to narrow down the root cause.
+     Provide exactly 3 short answer options (each under 10 words).
+     Respond ONLY with valid JSON: {"question": "...", "options": ["...", "...", "..."]}`
+  : `Based on the fault and answers, provide the diagnosis.
+     Respond ONLY with valid JSON: {
+       "diagnosis": "Root cause name (short, 3-6 words)",
+       "explanation": "2-3 sentence explanation of what is causing this fault technically",
+       "fixes": ["Fix 1 description (1 sentence)", "Fix 2 description (1 sentence)", "Fix 3 description (1 sentence)"],
+       "drills": [
+         {"name": "Drill name", "description": "How to do this drill in 2 sentences"},
+         {"name": "Drill name", "description": "How to do this drill in 2 sentences"},
+         {"name": "Drill name", "description": "How to do this drill in 2 sentences"}
+       ]
+     }`
+}`;
+
+  try {
+    const messages = conversationHistory.length ? conversationHistory : [{ role: 'user', content: 'Begin diagnosis.' }];
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages
+      })
+    });
+
+    if (!response.ok) throw new Error('API error ' + response.status);
+    const data = await response.json();
+    const text = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(text);
+
+    if (questionCount < maxQuestions - 1) {
+      renderQuestion(parsed);
+    } else {
+      showResult(parsed);
+    }
+  } catch (err) {
+    document.getElementById('question-area').innerHTML = `
+      <div class="error-msg">Something went wrong. Please try again.</div>
+      <button class="option-btn" onclick="askQuestion()">Try again</button>`;
+  }
+}
+
+function renderQuestion(data) {
+  document.getElementById('question-area').innerHTML = `
+    <div class="question-text">${data.question}</div>
+    ${data.options.map(opt => `<button class="option-btn" onclick="selectAnswer('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}
+  `;
+}
+
+function selectAnswer(answer) {
+  answersSoFar.push(answer);
+  conversationHistory.push({ role: 'user', content: answer });
+  questionCount++;
+  askQuestion();
+}
+
+function showResult(data) {
+  showScreen('result');
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('result-area').innerHTML = `
+    <div class="diagnosis-card">
+      <div class="diagnosis-label">Root cause identified</div>
+      <div class="diagnosis-title">${data.diagnosis}</div>
+      <div class="diagnosis-desc">${data.explanation}</div>
+    </div>
+    <div class="section-title">How to fix it</div>
+    ${data.fixes.map((f, i) => `
+      <div class="fix-item">
+        <div class="fix-dot"><span>${i+1}</span></div>
+        <div class="fix-text">${f}</div>
+      </div>`).join('')}
+    <div class="section-title">Practice drills</div>
+    ${data.drills.map(d => `
+      <div class="drill-item">
+        <div class="drill-name">${d.name}</div>
+        <div class="drill-desc">${d.description}</div>
+      </div>`).join('')}
+  `;
+}
+
+function goBack() {
+  if (questionCount === 0) { restart(); return; }
+  questionCount--;
+  answersSoFar.pop();
+  conversationHistory.pop();
+  askQuestion();
+}
+
+function restart() {
+  selectedFault = null; conversationHistory = []; answersSoFar = []; questionCount = 0;
+  showScreen('select');
+  document.getElementById('progress-fill').style.width = '0%';
+}
+
+renderFaultGrid();
+</script>
+</body>
+</html>
