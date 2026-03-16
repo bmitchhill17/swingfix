@@ -66,6 +66,45 @@
     </div>
   </div>
 
+<div id="screen-club" style="display:none">
+    <button class="back-btn" onclick="restart()">← back</button>
+    <div class="card">
+      <div class="section-label">Which club are you hitting?</div>
+      <div class="fault-grid">
+        <button class="fault-btn" onclick="selectClub('Driver')">
+          <span class="icon">🏌️</span>
+          <span class="name">Driver</span>
+          <span class="desc">1 wood, tee shots</span>
+        </button>
+        <button class="fault-btn" onclick="selectClub('Fairway wood or hybrid')">
+          <span class="icon">🪵</span>
+          <span class="name">Wood / Hybrid</span>
+          <span class="desc">3, 5 wood, hybrids</span>
+        </button>
+        <button class="fault-btn" onclick="selectClub('Long iron')">
+          <span class="icon">📏</span>
+          <span class="name">Long iron</span>
+          <span class="desc">3, 4, 5 iron</span>
+        </button>
+        <button class="fault-btn" onclick="selectClub('Mid or short iron')">
+          <span class="icon">⛳</span>
+          <span class="name">Mid / Short iron</span>
+          <span class="desc">6, 7, 8, 9 iron</span>
+        </button>
+        <button class="fault-btn" onclick="selectClub('Wedge')">
+          <span class="icon">🎯</span>
+          <span class="name">Wedge</span>
+          <span class="desc">PW, GW, SW, LW</span>
+        </button>
+        <button class="fault-btn" onclick="selectClub('All clubs')">
+          <span class="icon">🔄</span>
+          <span class="name">All clubs</span>
+          <span class="desc">Happens with everything</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
   <div id="screen-questions" style="display:none">
     <button class="back-btn" onclick="goBack()">← back</button>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -265,6 +304,7 @@ let conversationHistory = [];
 let answersSoFar = [];
 let questionsSoFar = [];
 let isLeftHanded = false;
+let selectedClub = null;
 
 function toggleHanded() {
   isLeftHanded = !isLeftHanded;
@@ -286,12 +326,19 @@ function selectFault(id, name, desc) {
   conversationHistory = [];
   answersSoFar = [];
   questionsSoFar = [];
+  selectedClub = null;
+  showScreen('club');
+}
+
+function selectClub(club) {
+  selectedClub = club;
   showScreen('questions');
   askQuestion();
 }
 
 function showScreen(name) {
   document.getElementById('screen-select').style.display = name === 'select' ? '' : 'none';
+  document.getElementById('screen-club').style.display = name === 'club' ? '' : 'none';
   document.getElementById('screen-questions').style.display = name === 'questions' ? '' : 'none';
   document.getElementById('screen-result').style.display = name === 'result' ? '' : 'none';
 }
@@ -318,6 +365,7 @@ async function askQuestion() {
 
 The golfer is ${isLeftHanded ? 'LEFT-HANDED — all directions are mirrored' : 'RIGHT-HANDED'}.
 Reported flight fault: "${selectedFault.name} — ${selectedFault.desc}"
+Club being used: ${selectedClub}
 
 Your knowledge base for this fault:
 ${kb}
@@ -435,6 +483,7 @@ function restart() {
   conversationHistory = [];
   answersSoFar = [];
   questionsSoFar = [];
+  selectedClub = null;
   showScreen('select');
   updateProgress(0);
 }
