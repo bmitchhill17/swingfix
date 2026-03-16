@@ -138,7 +138,16 @@ async function askQuestion() {
   updateProgress();
 
   const systemPrompt = `You are an expert PGA-level golf instructor diagnosing swing faults.
-The golfer has reported: "${selectedFault.name} — ${selectedFault.desc}". The golfer is ${isLeftHanded ? 'LEFT-handed — so remember all directions are mirrored compared to a right-handed golfer' : 'right-handed'}.
+The golfer has reported: "${selectedFault.name} — ${selectedFault.desc}". The golfer is ${isLeftHanded ? 'LEFT-handed — all directions are mirrored from a right-handed golfer' : 'RIGHT-handed'}.
+
+Key ball flight laws for a RIGHT-handed golfer:
+- Ball starting RIGHT of target = clubface is OPEN at impact
+- Ball starting LEFT of target = clubface is CLOSED at impact  
+- Ball curving RIGHT (slice/fade) = swing path is out-to-in relative to clubface
+- Ball curving LEFT (hook/draw) = swing path is in-to-out relative to clubface
+- Ball going STRAIGHT RIGHT = clubface open AND path matching, likely a push — caused by in-to-out path with open face, or swinging too far right
+- Ball going STRAIGHT LEFT = clubface closed AND path matching, likely a pull — caused by out-to-in path with closed face
+Always apply these laws correctly when diagnosing. Never contradict basic ball flight laws.`;
 Their answers so far: ${answersSoFar.length ? answersSoFar.map((a,i) => `Q${i+1}: ${a}`).join('; ') : 'none yet'}.
 Question number: ${questionCount + 1} of ${maxQuestions}.
 
