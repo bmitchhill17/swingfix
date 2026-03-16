@@ -395,10 +395,8 @@ List 3-5 most likely root causes ordered by likelihood. Use exact names from the
 
     if (!response.ok) throw new Error('API error ' + response.status);
     const data = await response.json();
-    const raw = data.content.map(b => b.text || '').join('');
-const jsonMatch = raw.match(/\{[\s\S]*\}/);
-if (!jsonMatch) throw new Error('No valid response received');
-const parsed = JSON.parse(jsonMatch[0]);
+    const text = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+const parsed = JSON.parse(text);
 
     if (parsed.action === 'question') {
       questionsSoFar.push(parsed.question);
